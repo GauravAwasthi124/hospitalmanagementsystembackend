@@ -1,5 +1,3 @@
-// services/db.service.js
-
 const db = require('../models');
 
 /**
@@ -21,7 +19,6 @@ const getOne = async (modelName, query) => {
         throw error;
     }
 };
-
 
 /**
  * Get one record by its ID
@@ -61,9 +58,75 @@ const createOne = async ({ modelName, data }) => {
     }
 };
 
+/**
+ * Update a record by its ID
+ * @param {string} modelName
+ * @param {number|string} id
+ * @param {object} data
+ * @returns {Promise<object|null>}
+ */
+const updateOneByID = async ({ modelName, id, data }) => {
+    try {
+        const model = db[modelName];
+        if (!model) throw new Error(`Model ${modelName} not found`);
+
+        const record = await model.findByPk(id);
+        if (!record) throw new Error(`Record with ID ${id} not found`);
+
+        const updatedRecord = await record.update(data);
+        return updatedRecord;
+    } catch (error) {
+        console.error(`Error in updateOneByID: ${error.message}`);
+        throw error;
+    }
+};
+
+/**
+ * Delete a record by its ID
+ * @param {string} modelName
+ * @param {number|string} id
+ * @returns {Promise<boolean>}
+ */
+const deleteOneByID = async ({ modelName, id }) => {
+    try {
+        const model = db[modelName];
+        if (!model) throw new Error(`Model ${modelName} not found`);
+
+        const record = await model.findByPk(id);
+        if (!record) throw new Error(`Record with ID ${id} not found`);
+
+        await record.destroy();
+        return true;
+    } catch (error) {
+        console.error(`Error in deleteOneByID: ${error.message}`);
+        throw error;
+    }
+};
+
+/**
+ * Get all records with optional filters
+ * @param {string} modelName
+ * @param {object} query
+ * @returns {Promise<object[]>}
+ */
+const getAll = async (modelName, query = {}) => {
+    try {
+        const model = db[modelName];
+        if (!model) throw new Error(`Model ${modelName} not found`);
+
+        const results = await model.findAll(query);
+        return results;
+    } catch (error) {
+        console.error(`Error in getAll: ${error.message}`);
+        throw error;
+    }
+};
+
 module.exports = {
     getOne,
     getOneByID,
     createOne,
+    updateOneByID,
+    deleteOneByID,
+    getAll,
 };
-
