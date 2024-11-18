@@ -8,7 +8,7 @@ const passport = require('passport');
 const httpStatus = require('http-status');
 const config = require('./config/config');
 const morgan = require('./config/morgan');
-const { jwtStrategy } = require('./config/passport');
+const { jwtStrategy } = require('./config/passport'); // Import the JWT strategy
 const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
@@ -21,47 +21,47 @@ if (config.env !== 'test') {
   app.use(morgan.errorHandler);
 }
 
-// set security HTTP headers
+// Set security HTTP headers
 app.use(helmet());
 
-// parse json request body
+// Parse JSON request body
 app.use(express.json());
 
-// parse urlencoded request body
+// Parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
 
-// sanitize request data
+// Sanitize request data
 app.use(xss());
 app.use(mongoSanitize());
 
-// gzip compression
+// Gzip compression
 app.use(compression());
 
-// enable cors
+// Enable CORS
 app.use(cors());
 app.options('*', cors());
 
-// jwt authentication
-app.use(passport.initialize());
-passport.use('jwt', jwtStrategy);
+// JWT authentication
+app.use(passport.initialize()); // Initialize Passport
+passport.use('jwt', jwtStrategy); // Register the JWT strategy
 
-// limit repeated failed requests to auth endpoints
+// Limit repeated failed requests to auth endpoints
 if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
 
-// v1 api routes
+// v1 API routes
 app.use('/v1', routes);
 
-// send back a 404 error for any unknown api request
+// Send back a 404 error for any unknown API request
 app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  next(new ApiError(httpStatus.NOT_FOUND, 'Not found data'));
 });
 
-// convert error to ApiError, if needed
+// Convert error to ApiError, if needed
 app.use(errorConverter);
 
-// handle error
+// Handle errors
 app.use(errorHandler);
 
 module.exports = app;

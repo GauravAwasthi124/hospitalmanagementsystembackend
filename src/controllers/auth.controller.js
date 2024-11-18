@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
+const express = require('express');
 const { authService, userService, tokenService, emailService } = require('../services');
 
 const register = catchAsync(async (req, res) => {
@@ -9,19 +10,28 @@ const register = catchAsync(async (req, res) => {
 });
 
 const login = catchAsync(async (req, res) => {
+  // console.log(req.body);
+  // const { email, password } = req.body;
+  // const user = await authService.loginUserWithEmailAndPassword(email, password);
+  // const tokens = await tokenService.generateAuthTokens(user);
+  // res.send({ user, tokens });
   const { email, password } = req.body;
-  const user = await authService.loginUserWithEmailAndPassword(email, password);
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.send({ user, tokens });
+    const user = await authService.loginUserWithEmailAndPassword(email, password);
+    const tokens = await tokenService.generateAuthTokens(user);
+    res.send({ user,tokens});
 });
 
 const logout = catchAsync(async (req, res) => {
-  await authService.logout(req.body.refreshToken);
+  await authService.logout(req.body.token);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
 const refreshTokens = catchAsync(async (req, res) => {
-  const tokens = await authService.refreshAuth(req.body.refreshToken);
+  const token = req.body['token'];
+  const bearer = token.split(" ");
+  const tokendata = bearer[0];
+  const tokens = await authService.refreshAuth(tokendata);
+  
   res.send({ ...tokens });
 });
 

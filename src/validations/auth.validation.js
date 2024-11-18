@@ -5,7 +5,9 @@ const register = {
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
-    name: Joi.string().required(),
+    clinic_id: Joi.number().integer(),
+    user_role: Joi.array(),
+    status:Joi.number().integer()
   }),
 };
 
@@ -18,13 +20,13 @@ const login = {
 
 const logout = {
   body: Joi.object().keys({
-    refreshToken: Joi.string().required(),
+    token: Joi.string().required(),
   }),
 };
 
 const refreshTokens = {
   body: Joi.object().keys({
-    refreshToken: Joi.string().required(),
+    token: Joi.string().required(),
   }),
 };
 

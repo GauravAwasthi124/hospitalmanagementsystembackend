@@ -1,17 +1,16 @@
 const httpStatus = require('http-status');
-const { User } = require('../models');
+const db = require('../models');
 const ApiError = require('../utils/ApiError');
-
 /**
  * Create a user
  * @param {Object} userBody
  * @returns {Promise<User>}
  */
 const createUser = async (userBody) => {
-  if (await User.isEmailTaken(userBody.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  }
-  return User.create(userBody);
+  // if (await db.User.isEmailTaken(userBody.email)) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  // }
+  return db.User.create(userBody);
 };
 
 /**
@@ -23,8 +22,21 @@ const createUser = async (userBody) => {
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
-const queryUsers = async (filter, options) => {
-  const users = await User.paginate(filter, options);
+// const queryUsers = async (filter, options) => {
+//   const users = await db.User.paginate(filter, options);
+//   return users;
+// };
+const queryUsers = async (filter) => { 
+  // Find all users based on the provided filter
+  const users = await db.User.findAll({
+    where: filter,
+    include: [
+      {
+        model: db.Clinic,
+        attributes:['clinic_name']
+      },
+    ],
+  });
   return users;
 };
 
@@ -34,7 +46,15 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id) => {
-  return User.findById(id);
+  return db.User.findByPk(id, {
+    attributes: ['id','email','user_role','status'],
+    include: [
+      {
+        model: db.Clinic,
+        attributes: ['clinic_name']
+      },
+    ],
+  });
 };
 
 /**
@@ -52,14 +72,14 @@ const getUserByEmail = async (email) => {
  * @param {Object} updateBody
  * @returns {Promise<User>}
  */
-const updateUserById = async (userId, updateBody) => {
-  const user = await getUserById(userId);
+const updateUserById = async (id, updateBody) => {
+  const user = await getUserById(id);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  }
+  // if (updateBody.email && (await User.isEmailTaken(updateBody.email, id))) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  // }
   Object.assign(user, updateBody);
   await user.save();
   return user;
@@ -70,12 +90,12 @@ const updateUserById = async (userId, updateBody) => {
  * @param {ObjectId} userId
  * @returns {Promise<User>}
  */
-const deleteUserById = async (userId) => {
-  const user = await getUserById(userId);
+const deleteUserById = async (id) => {
+  const user = await getUserById(id);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  await user.remove();
+  await user.destroy();
   return user;
 };
 

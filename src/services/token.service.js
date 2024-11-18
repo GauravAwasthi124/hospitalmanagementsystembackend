@@ -5,11 +5,11 @@ const config = require('../config/config');
 const userService = require('./user.service');
 const { Token } = require('../models');
 const ApiError = require('../utils/ApiError');
-const { tokenTypes } = require('../config/tokens');
+const tokenTypes = require('../config/tokens');
 
 /**
  * Generate token
- * @param {ObjectId} userId
+ * @param {number} userId
  * @param {Moment} expires
  * @param {string} type
  * @param {string} [secret]
@@ -28,7 +28,7 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
 /**
  * Save a token
  * @param {string} token
- * @param {ObjectId} userId
+ * @param {number} userId // Changed ObjectId to number
  * @param {Moment} expires
  * @param {string} type
  * @param {boolean} [blacklisted]
@@ -37,10 +37,10 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
 const saveToken = async (token, userId, expires, type, blacklisted = false) => {
   const tokenDoc = await Token.create({
     token,
-    user: userId,
+    user_id: userId, // Changed userId to user_id to match the model
     expires: expires.toDate(),
     type,
-    blacklisted,
+    blacklisted, // Added blacklisted here to keep track
   });
   return tokenDoc;
 };
@@ -53,9 +53,15 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
  */
 const verifyToken = async (token, type) => {
   const payload = jwt.verify(token, config.jwt.secret);
-  const tokenDoc = await Token.findOne({ token, type, user: payload.sub, blacklisted: false });
+  const tokenDoc = await Token.findOne({
+    where: {
+      token,
+      type,
+      user_id: payload.sub, 
+    },
+  });
   if (!tokenDoc) {
-    throw new Error('Token not found');
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Token not found or blacklisted');
   }
   return tokenDoc;
 };

@@ -1,8 +1,8 @@
 # Dependencies
-node_modules
+node_modules*
 
 # yarn error logs
-yarn-error.log
+yarn-error.log*
 
 # Environment varibales
 .env*
