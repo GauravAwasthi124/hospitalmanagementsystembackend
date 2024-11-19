@@ -30,12 +30,14 @@ const db = {
 db.Clinic.hasMany(db.User, { foreignKey: 'clinic_id', onDelete: 'CASCADE',as: 'user'});
 db.User.belongsTo(db.Clinic, { foreignKey: 'clinic_id', onDelete: 'CASCADE' });
 
+
 //patient
 db.Clinic.hasMany(db.Patient, { foreignKey: 'clinic_id', onDelete: 'CASCADE', as: 'patient' });
 db.Patient.belongsTo(db.Clinic, { foreignKey: 'clinic_id', onDelete: 'CASCADE', as: 'clinic'});
 db.Practitioner.hasMany(db.Patient, { foreignKey: 'practitioner_id', onDelete: 'CASCADE' });
 db.Patient.belongsTo(db.Practitioner, { foreignKey: 'practitioner_id', onDelete: 'CASCADE' });
-
+db.User.hasMany(db.Patient, { foreignKey: 'user_id', onDelete: 'CASCADE', as: 'user' });
+db.Patient.belongsTo(db.User, { foreignKey: 'user_id', onDelete: 'CASCADE', as: 'user' })
 
 //practitioner
 db.Clinic.hasMany(db.Practitioner, { foreignKey: 'clinic_id', onDelete: 'CASCADE', as: 'practitioner' });

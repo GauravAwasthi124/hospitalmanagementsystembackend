@@ -17,11 +17,11 @@ const Patient = sequelize.define(model.PATIENT, {
         allowNull: true,
     },
     date_of_birth: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
     },
     phone_number: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: false,
     },
     clinic_id: {

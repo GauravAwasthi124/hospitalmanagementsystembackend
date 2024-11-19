@@ -28,7 +28,7 @@ const getUsers = {
     user_role: Joi.array(),
     status: Joi.number().integer(),
   }),
-};
+}; 
 
 const getUser = {
   params: Joi.object().keys({
