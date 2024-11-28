@@ -43,9 +43,6 @@ const { roleRights } = require('../config/roles');
 
 const verifyCallback = (req, requiredRights, resolve, reject) => async (err, user, info) => {
   if (err || info || !user) {
-    console.log('Token:', req.headers['authorization']);
-    console.log('User:', user);
-    console.log('Info:', info);
     return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
   }
 
@@ -53,13 +50,8 @@ const verifyCallback = (req, requiredRights, resolve, reject) => async (err, use
 
   if (requiredRights.length) {
     const userRights = roleRights[user.role] || [];
-    console.log('User Rights:', userRights);
-    console.log('Required Rights:', requiredRights);
 
     const hasRequiredRights = requiredRights.every((requiredRight) => userRights.includes(requiredRight));
-    console.log('Has Required Rights:', hasRequiredRights);
-    console.log('User ID from Token:', user.id);
-    console.log('Requested User ID:', req.params.userId);
 
     // if (!hasRequiredRights && req.params.userId !== string(user.id)) {
     //   return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));

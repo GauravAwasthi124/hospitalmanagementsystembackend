@@ -116,6 +116,7 @@ const getAll = async (modelName, query = {}) => {
         if (!model) throw new Error(`Model ${modelName} not found`);
 
         const results = await model.findAll(query);
+        console.log(results);
         return results;
     } catch (error) {
         console.error(`Error in getAll: ${error.message}`);

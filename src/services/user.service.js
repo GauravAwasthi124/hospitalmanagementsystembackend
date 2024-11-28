@@ -12,7 +12,7 @@ const createUser = async (userBody) => {
   // }
   return db.User.create(userBody);
 };
-
+ 
 /**
  * Query for users
  * @param {Object} filter - Mongo filter

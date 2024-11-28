@@ -9,9 +9,11 @@ const router = express.Router();
 
 router
     .route('/')
-    .post(tokenValidation, validate(patientValidation.createPatient), patientController.createPatient)
+    .post(auth('manageUsers'), validate(patientValidation.createPatient), patientController.createPatient)
     .get(auth('getUsers'),validate(patientValidation.getPatient),patientController.getAllPatient)
 router
     .route('/:id')
-    .get(auth('getUsers'),validate(patientValidation.getPatientbyid),patientController.getPatient)
+    .get(auth('getUsers'), validate(patientValidation.getPatientbyid), patientController.getPatient)
+    .patch(auth('manageUsers'),validate(patientValidation.updatePatient),patientController.updatePatient)
+    .delete(auth('manageUsers'),validate(patientValidation.deletePatient),patientController.deletePatient)
 module.exports = router;
